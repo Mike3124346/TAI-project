@@ -1,0 +1,13 @@
+### PODSUMOWANIE SESJI
+Agent: Integration Developer
+Data: 2026-10-29
+Status: DONE
+1. Wykonane zadania: Zintegrowano PHP, Apache, PDO MySQL i MySQL 8.4 przez Docker Compose; poprawiono łączność w dev containerze, zainicjalizowano bazę danymi przykładowymi, zabezpieczono niepubliczne pliki przez konfigurację Apache i sprawdzono przepływy HTTP.
+2. Utworzone pliki: `Dockerfile` - obraz PHP/Apache z `pdo_mysql` i `mbstring`; `compose.yaml` - aplikacja i MySQL; `.env.example` - lokalne ustawienia przykładowe; `.gitignore` i `.dockerignore`; `docker/apache-vhost.conf`; `Docs/Sessions/integration_developer.md` - raport sesji.
+3. Zmienione pliki: `README.md` - kompletna instrukcja uruchomienia, konfiguracji i zatrzymania stosu.
+4. Najważniejsze ustalenia techniczne: W tym dev containerze ruch pomiędzy kontenerami Compose timeoutował, mimo wspólnej sieci. Testy wykazały osiągalność host gateway, więc MySQL jest publikowany wyłącznie na skonfigurowanym adresie docker0 (`DB_GATEWAY_IP`, domyślnie `172.17.0.1`) i porcie `DB_HOST_PORT` (`3307`); web łączy się przez `host.docker.internal`. Zmiana zachowuje brak wystawienia MySQL na wszystkich interfejsach hosta. Dane lokalne pozostają w nazwanym wolumenie.
+5. Wykonane testy i wyniki: `docker compose config --quiet` i build/start przeszły; MySQL był healthy, import zawierał 3 filmy. Testy w aplikacji potwierdziły wyszukiwanie bez rozróżniania wielkości liter, ochronę parametryzacji przed wejściem SQL, szczegóły i obsadę w obie strony, zapis recenzji z transakcyjnym rollbackiem; test HTTP: katalog/film/aktor 200, błędne ID 400, brak filmu 404, brak CSRF 403, ocena 11 z poprawnym tokenem 422. Bezpośredni HTTP dostęp do SQL, backendu, dokumentacji i `.env.example` zwraca 403. `git diff --check`, `node --check` i lint PHP także przeszły.
+6. Identyfikacja błędów i problemów: Pierwszy wariant sieci Compose nie działał w izolowanym środowisku kontenerowym; wykryto i naprawiono to przez host gateway. Zewnętrzny transfer zdjęć i fontów wymaga dostępu sieciowego do Unsplash i Google Fonts.
+7. Zależności: `APP_PORT`, `DB_GATEWAY_IP`, `DB_HOST_PORT`, `DB_USER`, `DB_PASSWORD` i `DB_ROOT_PASSWORD` w `.env`; Docker Engine i Docker Compose. Dla innego Docker bridge gateway należy zaktualizować `DB_GATEWAY_IP`.
+8. Pozostałe zadania: Przeprowadzić przegląd bezpieczeństwa i pełniejszą macierz QA; przed wdrożeniem produkcyjnym zastąpić konfigurację lokalną utwardzonym środowiskiem i obsługą moderacji/nadużyć.
+9. Następny krok: Security Reviewer
